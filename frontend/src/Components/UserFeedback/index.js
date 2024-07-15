@@ -49,7 +49,7 @@ const NewsletterSubscription = () => {
                 name="txtnname"
                 id="txtnname"
                 className="form-field input-error"
-                placeholder="Name"
+                placeholder="Coaching/ Teacher Name"
                 onChange={(e)=>{
                   setName(e.target.value)
                 }}

@@ -25,6 +25,13 @@ const STATUS_TYPE = {
 	REJECT: 'REJECT',
 };
 
+const MODELSTYPE = {
+    CURRENT_AFFAIRS:"CURRENT_AFFAIRS",
+    TEST_SERIES:"TEST_SERIES",
+    BOOK:"BOOK",
+    DESIGN:"DESIGN"
+}
+
 
 const transactionSchema = mongoose.Schema(
     {
@@ -52,6 +59,10 @@ const transactionSchema = mongoose.Schema(
 			type: String,
 			enum: Object.values(STATUS_TYPE),
 		},
+        model_type: {
+            type:String,
+            enum: Object.values(MODELSTYPE)
+        },
         amount: {
             type:Number
         },
@@ -86,4 +97,4 @@ transactionModels.createTransactions = async(transactions) => {
 }
 
 
-module.exports  = {transactionModels,TRANSACTION_TYPE,STATUS_TYPE,SUBSCRIPTION_TYPE}
+module.exports  = {transactionModels,TRANSACTION_TYPE,STATUS_TYPE,SUBSCRIPTION_TYPE,MODELSTYPE}

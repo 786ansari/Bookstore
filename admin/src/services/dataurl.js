@@ -8,6 +8,8 @@ export const endPoint = {
     checkTokenValidation:"/check-authentication",
     addUser:"/add-user",
     getUser:"/get-users",
+    changeUserActiveStatus:"/change-user-active-status",
+    changeUserDeleteStatus:"/change-user-delete-status",
     updateUser:"/update-user",
     deleteUser:"/delete-user",
     categoryAdd:"/addCategory",

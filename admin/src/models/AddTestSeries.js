@@ -76,7 +76,7 @@ export const AddTestSeries = (props) => {
                   <select
                    class="form-control  form-control-solid"
                    onChange={(e)=>setCategoryId(e.target.value)}>
-                    <option>Select</option>
+                    <option value="">Select</option>
                     {console.log("consolelog",categoryList)}
                     {
                       categoryList.map((val,i)=>{
@@ -90,7 +90,7 @@ export const AddTestSeries = (props) => {
                   <select
                    class="form-control  form-control-solid"
                    onChange={(e)=>setFileType(e.target.value)}>
-                    <option>Select</option>
+                    <option value="">Select</option>
                     {console.log("consolelog",categoryList)}
                     {
                       files.map((val,i)=>{
@@ -115,7 +115,7 @@ export const AddTestSeries = (props) => {
                   <select
                    class="form-control  form-control-solid"
                    onChange={(e)=>setPlan(e.target.value)}>
-                    <option>Select</option>
+                    <option value="">Select</option>
                      <option value="Free">Free</option>
                      <option value="Premium">Premium</option>
                   </select>

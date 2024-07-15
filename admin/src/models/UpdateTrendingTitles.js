@@ -14,7 +14,8 @@ const UpdateTrendingTitles = (props) =>{
         console.log("sdhfsjfgdsfjsdfds",props);
         if(Object.keys(props).length>0 && Object.keys(props.data).length>0){
           setTitle(props.data.title)
-          setTitleIcon(imageUrl+props.data.icon)
+          setTitleIcon(props.data.icon)
+          setEncodedIcon(imageUrl+props.data.icon)
           setId(props.data._id)
         }
 

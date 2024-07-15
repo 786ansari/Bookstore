@@ -785,6 +785,20 @@ BookModel.addbooktocart = async(data) => {
         return err
     }
 }
+BookModel.getCartByUserId = async(userId) => {
+    try{
+        let cart = await db.connectDb("carts",cartSchema);
+        let getCart = await cart.find({userId:userId})
+        if (getCart) {
+            return getCart;
+        } else {
+            return false;
+        }
+    }
+    catch(err){
+        return err
+    }
+}
 BookModel.getbookfromcart = async(ip) => {
     try{
         let cart = await db.connectDb("carts",cartSchema);

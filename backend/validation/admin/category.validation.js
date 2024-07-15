@@ -7,7 +7,7 @@ const  validate  = require('../../helper/ValidateHelper');
 		next
 	) {
 		const schema = Joi.object().keys({
-			categoryName: Joi.string().required()
+			categoryName: Joi.string().trim().min(1).required()
 		});
 		const isValid = await validate(req.body, res, schema);
 		if (isValid) {

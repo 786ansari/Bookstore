@@ -4,7 +4,7 @@ import { addBookFiles } from "../services/book.service"
 
 export const AddBookFiles = (props) => {
     const[file,setFile] = useState("")
-    const[chapter,setChapter] = useState("")
+    const[chapter,setChapter] = useState(null)
     const[chapterCount,setChapterCount] = useState(0)
     const[files,setFiles] = useState(["ppt","pdf","pptPdf","editable"])
     const[fileType,setFileType] = useState("")
@@ -19,6 +19,13 @@ export const AddBookFiles = (props) => {
     const handleFileChange = (e) => {
       let pdf = e.target.files[0]
         setFile(pdf)
+  }
+  const handleFiletype = (e) => {
+    const {name,value} = e.target
+    if(value !== "pdf"){
+      setChapter(null)
+    }
+    setFileType(value)
   }
   const handleBookChange = (e) => {
     console.log("valuevaluevalue",e.target.value)
@@ -84,30 +91,27 @@ export const AddBookFiles = (props) => {
                     }
                   </select>
                 </div>
-                <div className="form-group mb-3">
-                  <label className="small mb-1">Select Chapter</label>
-                  <select
-                   class="form-control  form-control-solid"
-                   onChange={(e)=>setChapter(e.target.value)}>
-                    <option>Select</option>
-                    {chapterHtml()}
-                    <option value="Full Book">Full Book</option>
-                  </select>
-                </div>
               <div className="form-group mb-3">
                   <label className="small mb-1">Select File Type</label>
                   <select
                    class="form-control  form-control-solid"
-                   onChange={(e)=>setFileType(e.target.value)}>
-                    <option>Select</option>
-                    {chapter == "Full Book"?
-                      files.map((val,i)=>{
+                   onChange={handleFiletype}>
+                    <option value="">Select</option>
+                    {files.map((val,i)=>{
                         return <option value={val} key={i}>{val}</option>
-                      }):
-                      <option value="pdf">pdf</option>
-                    }
+                      })}
                   </select>
                 </div>
+                {fileType == "pdf" && <div className="form-group mb-3">
+                  <label className="small mb-1">Select Chapter</label>
+                  <select
+                   class="form-control  form-control-solid"
+                   onChange={(e)=>setChapter(e.target.value)}>
+                    <option value="">Select</option>
+                    {chapterHtml()}
+                    <option value="Full Book">Full Book</option>
+                  </select>
+                </div>}
                 <div className="form-group mb-3">
                   <label className="small mb-1">file </label>
                   <input

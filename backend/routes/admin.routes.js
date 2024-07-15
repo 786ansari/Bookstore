@@ -24,6 +24,16 @@ const { loginValidation } = require("../validation/app/auth.validation");
 const { CategoryValidation } = require("../validation/admin/category.validation");
 const { PosterValidation } = require("../validation/admin/poster.validation");
 const plansService = require("../services/planService");
+const { BookValidation  } = require("../validation/admin/bookValidation");
+const { BookFilesValidation } = require("../validation/admin/bookfiles.validation");
+const { CurrentAffairsValidation } = require("../validation/admin/currentAffairs.validation");
+const { TestSeriesValidation } = require("../validation/admin/testSeries.validation");
+const { DesignValidation } = require("../validation/admin/design.validation");
+const { PreviousYearpaperValidation } = require("../validation/admin/previousYearPaper.validation")
+const { TrendingTitleValidation } = require("../validation/admin/trendingTitle.validation")
+const { AdminInfoValidation } = require("../validation/admin/adminInfo.validation")
+const { PlanValidation } = require("../validation/admin/plan.validation")
+const { PermotionPopupValidation } = require("../validation/admin/permotionPopup.validation")
 
 
 
@@ -44,6 +54,9 @@ router.post("/forgot-password",forgotPasswordValidation, adminService.forgotPass
 
 
 router.post("/add-user",verifyToken,authService.addUsers)
+router.post("/change-user-active-status",verifyToken,authService.changeActiveStatus)
+router.post("/change-user-delete-status",verifyToken,authService.changeUserDeleteStatus)
+
 
 router.get("/get-users",verifyToken, authService.getUsers)
 router.post("/subadmin",verifyToken,authService.addsubadmin)
@@ -66,21 +79,21 @@ router.post("/deleteCategoryById",verifyToken,BookModel.deletecategoryOfBookById
 
 router.post("/changeCategoryStatus",verifyToken,BookModel.changeCategoryStatus)
 
-router.post("/addBookDetails",upload.fields([{ name: 'bookIcon', maxCount: 1 }, { name: 'samplePdf', maxCount: 1 }]),verifyToken,BookModel.addBookDetails)
+router.post("/addBookDetails",upload.fields([{ name: 'bookIcon', maxCount: 1 }, { name: 'samplePdf', maxCount: 1 }]),verifyToken,BookValidation,BookModel.addBookDetails)
 
 router.get("/getBookList",verifyToken,BookModel.getBooks)
 
-router.post("/updateBookDetailsById",upload.fields([{ name: 'bookIcon', maxCount: 1 }, { name: 'samplePdf', maxCount: 1 }]),verifyToken,BookModel.updateBookDetails)
+router.post("/updateBookDetailsById",upload.fields([{ name: 'bookIcon', maxCount: 1 }, { name: 'samplePdf', maxCount: 1 }]),verifyToken,BookValidation,BookModel.updateBookDetails)
 
 router.post("/deleteBookDetailsById",upload.single('bookIcon'),verifyToken,BookModel.deleteBookDetails)
 
 router.post("/changeBookStatus",verifyToken,BookModel.changeBookStatus)
 
-router.post("/addBookFiles",upload.single('file'),verifyToken,BookModel.addBookFiles)
+router.post("/addBookFiles",upload.single('file'),verifyToken,BookFilesValidation,BookModel.addBookFiles)
 
 router.get("/getBookFiles",verifyToken,BookModel.getBookFiles)
 
-router.post("/updateBookFiles",upload.single('file'),verifyToken,BookModel.updateBookFiles)
+router.post("/updateBookFiles",upload.single('file'),verifyToken,BookFilesValidation,BookModel.updateBookFiles)
 
 router.post("/deleteBookFiles",verifyToken,BookModel.removeBookFiles)
 
@@ -102,11 +115,11 @@ router.get("/getAllCartDetails",verifyToken,BookModel.getAllCartDetails)
 
 router.get("/getAllSupportRequest",verifyToken,supportService.getAllSupportRequest)
 
-router.post("/setTitlesImage",upload.single('titleIcon'),verifyToken,BookModel.setTitlesImage)
+router.post("/setTitlesImage",upload.single('titleIcon'),verifyToken,TrendingTitleValidation,BookModel.setTitlesImage)
 
 router.post("/getTitleData",verifyToken,BookModel.getTitlesImage)
 
-router.post("/updateTitleDataById",upload.single('titleIcon'),verifyToken,BookModel.updateTitlesImage)
+router.post("/updateTitleDataById",upload.single('titleIcon'),verifyToken,TrendingTitleValidation,BookModel.updateTitlesImage)
 
 router.post("/deleteTitleDataById",verifyToken,BookModel.deleteTitlesImage)
 
@@ -118,11 +131,11 @@ router.post("/updatePromotionAndOfferDetails",upload.single('promotionIcon'),ver
 
 router.post("/deletePromotionAndOfferDetails",verifyToken,BookModel.deletePromotionAndOfferById)
 
-router.post("/addAdminInformation",verifyToken,BookModel.addAdminInformation)
+router.post("/addAdminInformation",verifyToken,AdminInfoValidation,BookModel.addAdminInformation)
 
 router.get("/getAdminInformation",verifyToken,BookModel.getAdminInformation)
 
-router.post("/updateAdminInformation",verifyToken,BookModel.updateAdminInformation)
+router.post("/updateAdminInformation",verifyToken,AdminInfoValidation,BookModel.updateAdminInformation)
 
 router.post("/addSocialMediaurl",verifyToken,socialMediaService.addSocialMediaUrl)
 
@@ -132,37 +145,37 @@ router.post("/updateSocialMediaurlById",verifyToken,socialMediaService.updateSoc
 
 router.post("/deleteSocialMediaurlById",verifyToken,socialMediaService.deleteSocialMediaById)
 
-router.post("/addCurrentAffairsFile",upload.single('file'),verifyToken,currentAffairsService.add)
+router.post("/addCurrentAffairsFile",upload.single('file'),verifyToken,CurrentAffairsValidation,currentAffairsService.add)
 
 router.get("/getCurrentAffairsFile",verifyToken,currentAffairsService.get)
 
-router.post("/updateCurrentAffairsFile",upload.single('file'),verifyToken,currentAffairsService.update)
+router.post("/updateCurrentAffairsFile",upload.single('file'),verifyToken,CurrentAffairsValidation,currentAffairsService.update)
 
 router.post("/deleteCurrentAffairsFile",verifyToken,currentAffairsService.remove)
 
 // router.post("/addTestSeries",upload.fields([{ name: 'pdfFile', maxCount: 1 },{ name: 'pptFile', maxCount: 1 },{ name: 'pptPdfFile', maxCount: 1 },{ name: 'editableFile', maxCount: 1 }]),verifyToken,async(req,res)=>{
 //     let resp = await TestSeriesService.add(req.file,req.doc.userId,req.body);
-router.post("/addTestSeries",upload.single('file'),verifyToken,TestSeriesService.add)
+router.post("/addTestSeries",upload.single('file'),verifyToken,TestSeriesValidation,TestSeriesService.add)
 
 router.post("/getTestSeries",verifyToken,TestSeriesService.get)
 
-router.post("/updateTestSeries",upload.single('file'),verifyToken,TestSeriesService.update)
+router.post("/updateTestSeries",upload.single('file'),verifyToken,TestSeriesValidation,TestSeriesService.update)
 
 router.post("/deleteTestSeries",verifyToken,TestSeriesService.remove)
 
-router.post("/addDesign",upload.fields([{ name: 'icon', maxCount: 1 }, { name: 'file', maxCount: 1 }]),verifyToken,DesignService.add)
+router.post("/addDesign",upload.fields([{ name: 'icon', maxCount: 1 }, { name: 'file', maxCount: 1 }]),verifyToken,DesignValidation,DesignService.add)
 
 router.get("/getDesign",verifyToken,DesignService.get)
 
-router.post("/updateDesign",upload.fields([{ name: 'icon', maxCount: 1 }, { name: 'file', maxCount: 1 }]),verifyToken,DesignService.update)
+router.post("/updateDesign",upload.fields([{ name: 'icon', maxCount: 1 }, { name: 'file', maxCount: 1 }]),verifyToken,DesignValidation,DesignService.update)
 
 router.post("/deleteDesign",verifyToken,DesignService.remove)
 
-router.post("/addPreviousYearPaper",verifyToken,previousYearPaperService.add)
+router.post("/addPreviousYearPaper",verifyToken, PreviousYearpaperValidation,previousYearPaperService.add)
 
 router.get("/getPreviousYearPaper",verifyToken,previousYearPaperService.get)
 
-router.post("/updatePreviousYearPaper",verifyToken,previousYearPaperService.update)
+router.post("/updatePreviousYearPaper",verifyToken,PreviousYearpaperValidation,previousYearPaperService.update)
 
 router.post("/deletePreviousYearPaper",verifyToken,previousYearPaperService.remove)
 
@@ -180,19 +193,19 @@ router.post("/updateFlashMessage",verifyToken,flashService.update)
 
 router.post("/deleteFlashMessage",verifyToken,flashService.remove)
 
-router.post("/setPermotionPopupData",verifyToken,upload.single('modalIcon'),PermotionPopupService.add)
+router.post("/setPermotionPopupData",verifyToken,upload.single('modalIcon'),PermotionPopupValidation,PermotionPopupService.add)
 
 router.get("/getPermotionPopupData",verifyToken,PermotionPopupService.get)
 
-router.post("/updatePermotionPopupData",verifyToken,upload.single('modalIcon'),PermotionPopupService.update)
+router.post("/updatePermotionPopupData",verifyToken,upload.single('modalIcon'),PermotionPopupValidation,PermotionPopupService.update)
 
 router.post("/deletePermotionPopupData",verifyToken,PermotionPopupService.remove)
 
-router.post("/addSubscriptionPlan",verifyToken,plansService.add)
+router.post("/addSubscriptionPlan",verifyToken,PlanValidation,plansService.add)
 
 router.get("/getSubscriptionPlan",verifyToken,plansService.get)
 
-router.post("/updateSubscriptionPlan",verifyToken,plansService.update)
+router.post("/updateSubscriptionPlan",verifyToken,PlanValidation,plansService.update)
 
 router.post("/deleteSubscriptionPlan",verifyToken,plansService.remove)
 

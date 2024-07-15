@@ -29,7 +29,7 @@ const AddTrendingTitles = (props) =>{
       console.log("titleIcontitleIcon",titleIcon,title)
         let formdata = new FormData()
             formdata.append("title",title)
-            formdata.append("titleIcon",titleIcon)
+            formdata.append("icon",titleIcon)
             let result = await setTrendingTitleImage(formdata)
             // setTitle("")
             // setTitleIcon("")
@@ -80,7 +80,7 @@ const AddTrendingTitles = (props) =>{
                         type="file"
                         ref={imageRef}
                         placeholder="title image"
-                        name="titleIcon"
+                        name="icon"
                         onChange={handleTitleImage}
                       />
                       <div className="form-control">

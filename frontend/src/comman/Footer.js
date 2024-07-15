@@ -27,7 +27,7 @@ const Footer = () => {
                     </span>
                   </div>
                   <div className="search_part fl">
-                    <a href={`tel:${adminInfo?.mobileNumber}`}>{adminInfo?.mobileNumber}</a>
+                    <a href={`tel:${adminInfo?.mobileNumber}`} style={{ textDecoration: "none",color:'white'}}>{adminInfo?.mobileNumber}</a>
                   </div>
                 </div>
                 <div className="w100 fl">
@@ -37,7 +37,7 @@ const Footer = () => {
                     </span>
                   </div>
                   <div className="search_part fl">
-                  <a href={`mailto:${adminInfo?.emailId}`}>{adminInfo?.emailId}</a>
+                  <a href={`mailto:${adminInfo?.emailId}`} style={{ textDecoration: "none",color:'white'}}>{adminInfo?.emailId}</a>
                   </div>
                 </div>
                 <div className="w100 fl">
@@ -47,7 +47,7 @@ const Footer = () => {
                     </span>
                   </div>
                   <div className="search_part fl">
-                  <a href={`${adminInfo?.address}`}>{adminInfo?.address}</a>
+                  <a href="javascript:void(0)" style={{ textDecoration: "none",color:'white'}}>{adminInfo?.address}</a>
                   </div>
                 </div>
               </div>
@@ -94,12 +94,12 @@ const Footer = () => {
             © Copyright
             <span className="fco"> Coaching Test & Notes </span> All rights reserved.
           </div>
-          <div className="w50 rs fr ar pal pvt">
+          {/* <div className="w50 rs fr ar pal pvt">
             Designed and Developed by{' '}
             <a href="https://www.dextrousinfo.com/" target="_blank">
               Ab2software.com
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
       <p id="back-top" style={{ display: 'block', zIndex: 99999 }}>

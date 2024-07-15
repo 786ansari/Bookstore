@@ -8,7 +8,7 @@ export const AddCurrentAffairs = (props) => {
     const[type,setType] = useState("")
     const[files,setFiles] = useState(["ppt","pdf","pptPdf","editable"])
     const[fileType,setFileType] = useState("")
-    const[range,setRange] = useState("")
+    const[range,setRange] = useState(null)
     const[Weekly,setWeekly] = useState(["Jan 01 - Jan 07",
     "Jan 08 - Jan 14",
     "Jan 15 - Jan 21",
@@ -75,6 +75,14 @@ export const AddCurrentAffairs = (props) => {
       let name = e.target.name
       setFile(file)
   }
+  const handleTypeChange = (e) => {
+    const {name,value} = e.target
+    console.log("handlechngae",value)
+    if(value != "Daily"){
+      setRange(null)
+    }
+    value.trim() == "" ? setType(""):setType(value)
+  }
 
   const handleSubmit = async() => {
     const formdata = new FormData()
@@ -115,8 +123,8 @@ export const AddCurrentAffairs = (props) => {
                   <label className="small mb-1">Select Type</label>
                   <select
                    class="form-control  form-control-solid"
-                   onChange={(e)=>setType(e.target.value)}>
-                    <option>Select</option>
+                   onChange={handleTypeChange}>
+                    <option value="">Select</option>
                     {
                       array.map((val,i)=>{
                         return <option value={val} key={i}>{val}</option>
@@ -142,7 +150,7 @@ export const AddCurrentAffairs = (props) => {
                   <select
                    class="form-control  form-control-solid"
                    onChange={(e)=>setPlan(e.target.value)}>
-                    <option>Select</option>
+                    <option value="">Select</option>
                      <option value="Free">Free</option>
                      <option value="Premium">Premium</option>
                   </select>
@@ -153,7 +161,7 @@ export const AddCurrentAffairs = (props) => {
                   <select
                    class="form-control  form-control-solid"
                    onChange={(e)=>setFileType(e.target.value)}>
-                    <option>Select</option>
+                    <option value="">Select</option>
                     {
                       files.map((val,i)=>{
                         return <option value={val} key={i}>{val}</option>

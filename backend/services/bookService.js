@@ -506,7 +506,7 @@ BookModel.updateTitlesImage = async(req,res,next)=>{
             title.icon = req.file.filename
         }
         else{
-            title.icon = req.body.titleIcon
+            title.icon = req.body.icon
         }
         let update = await bookModels.udpatetitleimagebyid(req.body._id,title)
         return R(res,true,"Data updated successfully!!",{},200)
@@ -605,7 +605,7 @@ BookModel.updateAdminInformation = async(req,res,next)=>{
     try {
         let data = {
             emailId:req.body.emailId,
-            mobileNumber:req.body.mobileNum,
+            mobileNumber:req.body.mobileNumber,
             address:req.body.address,
             whatsAppNumber:req.body.whatsAppNumber
         }

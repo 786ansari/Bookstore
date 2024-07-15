@@ -106,7 +106,7 @@ const TrendingTitles = (props) => {
   const columns = [
     { dataField: "id", text: "id",formatter: (cell, row,rowIndex) => `${rowIndex+1}` },
     { dataField: "title", text: "Title"},
-    { dataField: "titleIcon", text: "Title Image",formatter: imageFormatter },
+    { dataField: "icon", text: "Title Image",formatter: imageFormatter },
     // { dataField: "isActive", text: "isActive", formatter: isActiveFormatter},
     // { dataField: "maker_fee", text: "Maker Fee", sort: true },
     // { dataField: "taker_fee", text: "Taker Fee", sort: true },

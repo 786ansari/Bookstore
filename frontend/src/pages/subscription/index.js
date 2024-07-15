@@ -4,14 +4,17 @@ import Header from "../../comman/Header";
 import SlideShow from "../../Components/Slideshow/Slideshow";
 import { getSubscriptionPlan } from "../../services/order.service.js";
 import { Card, Col, Row } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Subscription = () => {
   const [plans, setPlans] = useState([]);
+  const [modal_type, set_Modal_Type] = useState("");
   const { Meta } = Card;
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
+    set_Modal_Type(location?.state)
     getPlan();
   }, []);
 
@@ -23,7 +26,7 @@ const Subscription = () => {
 
   const handlePlanClick = (item) => {
     console.log("planitem",item)
-    navigate("/checkout",{state:{plan:item,type:"subscription"}})
+    navigate("/checkout",{state:{plan:item,type:"subscription",modal_type:modal_type}})
   }
 
   return (

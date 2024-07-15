@@ -104,7 +104,7 @@ export const UpdatePreviousYearPaper = (props) => {
                     class="form-control  form-control-solid"
                     type="text"
                     name="file"
-                    // value={bookIcon}
+                    value={file}
                     placeholder="Add file link here"
                     onChange={handleFileChange}
                   />

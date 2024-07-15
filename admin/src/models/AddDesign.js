@@ -4,6 +4,7 @@ import { addDesign } from "../services/design.service"
 
 export const AddDesign = (props) => {
     const[type,setType] = useState("")
+    const[amount,setAmount] = useState(0)
     const[designType,setDesignType] = useState("")
     const[icon,setIcon] = useState("")
     const[file,setFile] = useState("")
@@ -23,6 +24,8 @@ export const AddDesign = (props) => {
   const handleSubmit = async() => {
     const formdata = new FormData()
     formdata.append("designType",designType)
+    formdata.append("amount",amount)
+    formdata.append("plan",type)
     formdata.append("file",file)
     formdata.append("icon",icon)
     let result = await addDesign(formdata)
@@ -58,14 +61,15 @@ export const AddDesign = (props) => {
                   <select
                    class="form-control  form-control-solid"
                    onChange={(e)=>setDesignType(e.target.value)}>
-                    <option>Select</option>
+                    <option value="">Select</option>
                     {
                       array.map((val,i)=>{
                         return <option value={val} key={i}>{val}</option>
                       })
                     }
                   </select>
-                </div> <div className="form-group mb-3">
+                </div> 
+                <div className="form-group mb-3">
                   <label className="small mb-1">Add Icon </label>
                   <input
                     class="form-control  form-control-solid"
@@ -74,6 +78,26 @@ export const AddDesign = (props) => {
                     placeholder=""
                     onChange={handleFileChange}
                   />
+                </div>
+                <div className="form-group mb-3">
+                  <label className="small mb-1">Amount </label>
+                  <input
+                    class="form-control  form-control-solid"
+                    type="number"
+                    name="amount"
+                    placeholder="Enter amount"
+                    onChange={(e)=>{setAmount(e.target.value)}}
+                  />
+                </div>
+                <div className="form-group mb-3">
+                  <label className="small mb-1">Plan Type </label>
+                  <select
+                   class="form-control  form-control-solid"
+                   onChange={(e)=>setType(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="Free">Free</option>
+                    <option value="Premium">Premium</option>
+                  </select>
                 </div>
 
                 <div className="form-group mb-3">

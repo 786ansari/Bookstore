@@ -69,7 +69,7 @@ export const AddPreviousYearPaper = (props) => {
                   <select
                    class="form-control  form-control-solid"
                    onChange={(e)=>setCategoryId(e.target.value)}>
-                    <option>Select</option>
+                    <option value="">Select</option>
                     {console.log("consolelog",categoryList)}
                     {
                       categoryList.map((val,i)=>{

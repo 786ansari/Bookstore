@@ -1,12 +1,13 @@
 import { HotToaster } from "../utils/Toaster"
 
-export const ResultFunction = (result,fun,state) => {
+export const ResultFunction = async(result,fun,state) => {
+  console.log("insdieresultfunction",result)
     if(result.status){
         HotToaster(result.status,result.message)
-        fun()
-        state?.length>0 &&state.map((item)=>{
-          return item("")
-        })
+        await fun()
+        // state?.length>0 && state.map((item)=>{
+        //   return item("")
+        // })
       }
       else{
         HotToaster(result.status,result.message)

@@ -10,7 +10,7 @@ const usePayment = () => {
   const { userProfile } = useContext(AuthContext);
 
   const handlePayment = useCallback(
-    async ({amount,files,type,planId}) => {
+    async ({amount,files,type,itemId,model_type}) => {
       const data = {
         amount: amount, // Use the amount passed as parameter
       };
@@ -26,17 +26,19 @@ const usePayment = () => {
         image: userProfile?.profileIcon ? imageUrl + userProfile?.profileIcon : "./images/user.png",
         order_id: order.data.id,
         handler: async(res) => {
-          console.log("res=======>>>>>>>>>", res);
-          const resultfiles = {
-            amount:amount,
-            type:type,
-            planId:planId,
-            files:JSON.stringify(files),
-            payment_id:res.razorpay_payment_id,
-            order_id:res.razorpay_order_id,
-            signature:res.razorpay_signature,
+          if(res.razorpay_payment_id){
+            const resultfiles = {
+              amount:amount,
+              type:type,
+              model_type:model_type,
+              itemId:itemId,
+              files:JSON.stringify(files),
+              payment_id:res.razorpay_payment_id,
+              order_id:res.razorpay_order_id,
+              signature:res.razorpay_signature,
+            }
+            const results = await capturePayment(resultfiles)
           }
-          const results = await capturePayment(resultfiles)
         },
         prefill: {
           name: userProfile?.name,

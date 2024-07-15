@@ -24,6 +24,7 @@ import { setProfileData } from "../../services/profile.service"
 import  usePayment  from "../../hooks/payment/usePayment"
 import axios from "axios"
 import { capturePayment } from "../../services/order.service"
+import { OrderReviewForBooks, OrderReviewForDesign, OrderReviewForSubscriptionPlan } from "./OrderReview"
 
 const Checkout = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
@@ -34,6 +35,7 @@ const Checkout = () => {
   const [discount, setDiscount] = useState(0);
   const [bookNames, setBookName] = useState("");
   const [types, setType] = useState("");
+  const [model_type, setModalType] = useState("");
   const [plans, setPlans] = useState({});
 
   const [ebook, setEBook] = useState({});
@@ -43,7 +45,7 @@ const Checkout = () => {
   const { profile, userProfile } = useContext(AuthContext)
   const [form] = Form.useForm();
   const location = useLocation()
-  const { book, totalMRP, totalSellingAmount,type, bookName,plan } = location.state || {};
+  const { book, totalMRP, totalSellingAmount,type, bookName,plan,modal_type } = location.state || {};
   const { handlePayment } = usePayment()
   const handleOpenDialogLogin = () => {
     setIsOpenLogin(true);
@@ -58,10 +60,12 @@ const Checkout = () => {
       let dis = Number(totalMRP)-Number(totalSellingAmount)
         dis = (Number(dis)/Number(totalMRP))*100
       setDiscount(dis)
-      console.log("Received data in CheckoutPage:", book,bookName);
       // You can now use the data to pre-fill form fields or for other purposes
     }
-    if(type == "subscription"){
+    console.log("Received data in CheckoutPage:", book,modal_type);
+
+    if(type == "subscription" || type == "design"){
+        setModalType(modal_type)
         setType(type)
         setPlans(plan)
         setSellingAmount(plan?.amount)
@@ -86,15 +90,13 @@ const Checkout = () => {
     setCartVisiable(!cartVisiable)
   }
   const onCreate = async(values) => {
-    const state = JSON.parse(values.states)
-    values.state = state.name
-    console.log('Received values:', values);
     let result = await setProfileData(values)
     let data  = {
         amount:sellingAmount || totalSellingAmount,
         files:ebook,
         type:types,
-        planId:plans?._id
+        itemId:plans?._id,
+        model_type:model_type
     }
         await handlePayment(data)
   };
@@ -220,49 +222,49 @@ const Checkout = () => {
           </Col>
         </Row>
         <Row gutter={[24, 0]}>
-          <Col span={12}>
+        <Col span={12}>
             <Form.Item
-              label="Select State"
-              name="states"
+              label="Enter country"
+              name="country"
               rules={[
-                { required: true, message: "Please select state!" }, // Change the message  {
+                { required: true, message: "Please enter country!" }, // Change the message  {
               ]}
             >
-              <Select placeholder="Select state" allowClear onChange={handleIsoStateChange}>
-              <Select.Option value="">
-                        Select
-                      </Select.Option>
-                {State?.getStatesOfCountry("IN")?.map((item) => {
-                    return (
-                      <Select.Option value={JSON.stringify(item)}>
-                        {item.name}
-                      </Select.Option>
-                    );
-                  })}
-              </Select>
+               <Input
+                autoComplete="off"
+                type="text"
+                placeholder="Enter country"
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
-              label="Select City"
-              name="city"
+              label="Enter state"
+              name="state"
               rules={[
-                { required: true, message: "Please select city!" }, // Change the message  {
+                { required: true, message: "Please enter state!" }, // Change the message  {
               ]}
             >
-              <Select placeholder="Select city" allowClear>
-              <Select.Option value="">
-                        Select
-                      </Select.Option>
-                {City.getCitiesOfState("IN",cityViaState).map((item) => {
-                  console.log("statetsattetstatte",cityViaState)
-                    return (
-                      <Select.Option value={item.name}>
-                        {item.name}
-                      </Select.Option>
-                    );
-                  })}
-              </Select>
+               <Input
+                autoComplete="off"
+                type="text"
+                placeholder="Enter state"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Enter City"
+              name="city"
+              rules={[
+                { required: true, message: "Please enter city!" }, // Change the message  {
+              ]}
+            >
+               <Input
+                autoComplete="off"
+                type="text"
+                placeholder="Enter city"
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -311,131 +313,11 @@ const Checkout = () => {
                       </div>
                     </div>
                     </div>
-                   {types !== "subscription" ? <div className="col-lg-5 ">
+                     <div className="col-lg-5 ">
                       <div className="outer-border">
-                      <div class="form-check-title"><h4>REVIEW YOUR ORDER</h4></div>
-                       {type !== "cart" ?<div className="row">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Product Name</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{bookNames || ""}</p>
-                                </div>
-                          </div>
-                       </div>:<></>}
-                       <div className="row">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Qty</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{ebook?.length}</p>
-                                </div>
-                          </div>
-                       </div>
-                       <div className="row">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Subtotal</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{MRP || 0}</p>
-                                </div>
-                          </div>
-                       </div>
-                       <div className="row">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Discount</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{typeof(discount) =="number"?  discount?.toFixed(2) : discount || 0}</p>
-                                </div>
-                          </div>
-                       </div>
-                       <div className="row total-border">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Total</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{sellingAmount}</p>
-                                </div>
-                          </div>
-                       </div>
-
-                       <div className="row">
-                             <div className="col-lg-12">
-                                <div className="order-but">
-                                    <button type="button" className="btn btn-danger" onClick={handlePlaceOrder}>Place Your order</button>
-                                </div>
-                             </div>
-                       </div>
-
-                      </div>
-                    </div>:
-                      <div className="col-lg-5 ">
-                      <div className="outer-border">
-                      <div class="form-check-title"><h4>REVIEW YOUR ORDER</h4></div>
-                       <div className="row">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Title</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{plans?.title || ""}</p>
-                                </div>
-                          </div>
-                       </div>
-                       <div className="row">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Amount</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{plans?.amount || 0}</p>
-                                </div>
-                          </div>
-                       </div>
-                       <div className="row">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Days</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{plans?.days || 0}</p>
-                                </div>
-                          </div>
-                       </div>
-                       <div className="row total-border">
-                          <div className="col-lg-6">
-                               <div className="pro-name"> 
-                                  <h6>Total</h6>
-                                </div> 
-                          </div>
-                          <div className="col-lg-6">
-                                <div className="pro-name">
-                                   <p>{plans?.amount || 0}</p>
-                                </div>
-                          </div>
-                       </div>
+                      {types == "subscription"? <OrderReviewForSubscriptionPlan plans={plans}/>:
+                      types == "design" ? <OrderReviewForDesign plans={plans}/>: <OrderReviewForBooks type = {type} sellingAmount={sellingAmount} bookNames={bookNames} ebook={ebook} MRP={MRP} discount={discount} />
+                      }
 
                        <div className="row">
                              <div className="col-lg-12">
@@ -447,7 +329,6 @@ const Checkout = () => {
 
                       </div>
                     </div>
-                    }
 
 
                   </div>

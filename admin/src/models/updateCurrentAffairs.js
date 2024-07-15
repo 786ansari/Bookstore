@@ -3,13 +3,14 @@ import hasEmptyValue from "../validations/Category"
 import { HotToaster } from "../utils/Toaster"
 import  {ResultFunction} from "../comman/resultFunction"
 import { currentAffairsFileUpdate } from "../services/currentAffairs.service"
+import { imageUrl } from "../services/dataurl"
 
 export const UpdateCurrentAffairs = (props) => {
     const[id,setId] = useState("")
     const[type,setType] = useState("")
     const[file,setFile] = useState("")
     const[fileType,setFileType] = useState("")
-    const[range,setRange] = useState("")
+    const[range,setRange] = useState(null)
     const[plan,setPlan] = useState("")
 
     useEffect(()=>{
@@ -18,6 +19,7 @@ export const UpdateCurrentAffairs = (props) => {
             setId(props.data._id)
             setType(props.data.type)
             setFileType(props.data.fileType)
+            setFile(props.data.file)
             setRange(props.data.range)
             setPlan(props.data.plan)
         }
@@ -33,6 +35,7 @@ export const UpdateCurrentAffairs = (props) => {
     const formdata = new FormData()
     formdata.append("id",id)
     formdata.append("fileType",fileType)
+    formdata.append("type",type)
     formdata.append("file",file)
     formdata.append("range",range)
     formdata.append("plan",plan)
@@ -89,7 +92,7 @@ export const UpdateCurrentAffairs = (props) => {
                   <label className="small mb-1">Select File Type</label>
                   <select
                    class="form-control  form-control-solid">
-                    <option>{fileType}</option>
+                    <option value={fileType}>{fileType}</option>
                     {/* {console.log("consolelog",categoryList)} */}
                     {/* {
                       categoryList.map((val,i)=>{
@@ -107,15 +110,16 @@ export const UpdateCurrentAffairs = (props) => {
                   </select>
                 </div>
                 <div className="form-group mb-3">
-                  <label className="small mb-1">Ppt file </label>
+                  <label className="small mb-1">File </label>
                   <input
                     class="form-control  form-control-solid"
                     type="file"
-                    name="pptFile"
+                    name="file"
                     // value={bookIcon}
                     placeholder=""
                     onChange={handleFileChange}
                   />
+                  <a href={imageUrl+file} alt="no file" target="_blank" download>View File</a>
                 </div>
             <button
               class="btn btn-s btn-indigo btn-block w-100"

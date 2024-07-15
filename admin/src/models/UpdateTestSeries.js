@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import  {ResultFunction} from "../comman/resultFunction"
 import { testSeriesUpdate } from "../services/testseries.service"
+import { imageUrl } from "../services/dataurl"
 
 export const UpdateTestSeries = (props) => {
     const[id,setId] = useState("")
@@ -14,6 +15,7 @@ export const UpdateTestSeries = (props) => {
 
 
     useEffect(()=>{
+      console.log("proppropsoropsp")
         if(props && props.data){
             setId(props.data._id)
             setFile(props.data.file)
@@ -33,7 +35,13 @@ export const UpdateTestSeries = (props) => {
   }
   const handleChange = (e) => {
     let value = e.target.value
+    let name = e.target.name
+    if(name == "subject"){
     setSubject(value)
+    }
+    if(name == "releaseDate"){
+      setReleaseDate(value)
+    }
   }
 
   const handleSubmit = async() => {
@@ -139,7 +147,8 @@ export const UpdateTestSeries = (props) => {
                     placeholder=""
                     onChange={handleFileChange}
                   />
-                </div>
+                  <a href={imageUrl+file} alt="no file" target="_blank" download>View File</a>
+                                    </div>
                 {/* <div className="form-group mb-3">
                   <label className="small mb-1">Ppt file </label>
                   <input

@@ -25,12 +25,19 @@ const loginSchema = mongoose.Schema(
         pincode: { type: String },
         pMode: { type: String },
         country: { type: String },
+        otp:{type:String},
+        is_active: { type: Boolean,default:true },
+        is_deleted: { type: Boolean, default:false },
         state: { type: String },
         password: { type: String, required: true },
-        is_subscribed: {type:Boolean,default:true},
-        subscription_end:{type:String},
-        days: {type:Number,default:30 },
-        amount: {type:Number,default:0},
+        is_subscribed_for_current_affairs: {type:Boolean,default:true},
+        is_subscribed_for_test_series: {type:Boolean,default:false},
+        subscription_end_for_current_affairs:{type:String},
+        subscription_end_for_test_series:{type:String},
+        days_for_current_affairs: {type:Number,default:30 },
+        days_for_test_series: {type:Number,default:0 },
+        amount_for_current_afairs: {type:Number,default:0},
+        amount_for_test_series: {type:Number,default:0},
         // client_ip: { type: String, default: "" }, //1 verify, 2 reject, 0 pending
         userType: { type: Number, default: 0, enum: [0, 1] }, // 1 for admin
     },
@@ -62,17 +69,24 @@ authModel.cronForOneHour = async() => {
     const nowInMillis = Date.now();
 
     const check = await db.connectDb("users",loginSchema)
-    const result = await check.updateMany(
-      { is_subscribed:true, subscription_end: { $lt: nowInMillis } }, // Replace 'subscriptionDate' with your date field
-      { $set: { is_subscribed: false,days:0 } }
+    const resultForCurrentAffairs = await check.updateMany(
+      { is_subscribed_for_current_affairs:true, subscription_end_for_current_affairs: { $lt: nowInMillis } }, // Replace 'subscriptionDate' with your date field
+      { $set: { is_subscribed_for_current_affairs: false,days_for_current_affairs:0 } }
     );
+    const resultForTestSeries = await check.updateMany(
+        { is_subscribed_for_test_series:true, subscription_end_for_test_series: { $lt: nowInMillis } }, // Replace 'subscriptionDate' with your date field
+        { $set: { is_subscribed_for_test_series: false,days_for_test_series:0 } }
+      );
 }
 authModel.cronForOneDay = async() => {
-    console.log('Running a task every second');
     const check = await db.connectDb("users",loginSchema)
-    const result = await check.updateMany(
-        { is_subscribed: true,days: { $gt: 0 } },
-        { $inc: { days: -1 } }
+    const resultForCurrentAffairs = await check.updateMany(
+        { is_subscribed_for_current_affairs: true,days_for_current_affairs: { $gt: 0 } },
+        { $inc: { days_for_current_affairs: -1 } }
+      );
+      const resultForTestSeries = await check.updateMany(
+        { is_subscribed_for_test_series: true,days_for_test_series: { $gt: 0 } },
+        { $inc: { days_for_test_series: -1 } }
       );
 }
 
@@ -111,6 +125,43 @@ authModel.getUser = async()=> {
     return getUser
 }
 
+
+authModel.getUserByMobileOrEmail = async()=> {
+    const add = await db.connectDb("users",loginSchema)
+    const getUser = await add.find({})
+    return getUser
+}
+
+authModel.changeStatus = async(data) => {
+    try{
+        let userstatus = await db.connectDb("users",loginSchema)
+        let statusCategory = await userstatus.updateOne({_id:data.id},{$set:{is_active:data.isActive}})
+        if (statusCategory) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    catch(err){
+        return err
+    }
+}
+
+authModel.changeDeleteStatus = async(data) => {
+    try{
+        let userstatus = await db.connectDb("users",loginSchema)
+        let statusCategory = await userstatus.updateOne({_id:data.id},{$set:{is_deleted:data.isDelete}})
+        if (statusCategory) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    catch(err){
+        return err
+    }
+}
+
 authModel.findPermission = async(userId) => {
     let connect = await db.connectDb("subadmins",subadmin)
     let find = await connect.findOne({_id:userId})
@@ -122,8 +173,8 @@ authModel.findPermission = async(userId) => {
     }
 }
 
-authModel.login = async (key, email, pass) => {
-    // console.log(key, emailId, pass);
+authModel.login = async (key, email) => {
+    console.log(key, email);
     let check = {};
     check[key] = email;
     console.log(check, "Check obj");

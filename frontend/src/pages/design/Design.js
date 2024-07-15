@@ -2,10 +2,26 @@ import React, { useState } from "react";
 import { imageUrl } from "../../services/dataurl";
 import NewsletterSubscription from "../../Components/UserFeedback";
 import FeedbackForm from "../../Components/support";
+import { checkDesignForFree } from "../../services/design.service";
+import { useNavigate } from "react-router-dom";
 
 const Design =(props) =>{
     const [customerCare, setCustomerCare] = useState(false);
     const [newsLater, setNewsLater] = useState(false);
+    const navigate = useNavigate()
+    const checkDesign = async(item) => {
+      const data = {
+        _id:item?._id
+      }
+      const result = await checkDesignForFree(data)
+      console.log("resultresult",result)
+      if(result.status){
+        window.open(imageUrl+result?.data?.file)
+      }
+      else{
+        navigate("/checkout",{state:{type:"design",plan:result?.data,modal_type:"design"}})
+      }
+    }
     return (
         <>
            <div className="row design-main">
@@ -50,7 +66,7 @@ const Design =(props) =>{
                         />
                     </div>
                     <div className="design-file">
-                    <a href="https://ab2software.com/sample.pdf" className="designa-img" download>
+                    <a href="#" className="designa-img" onClick={()=>checkDesign(item)}>
                         <p>EDITABLE ZIP FILE <span><i class="fa fa-download" aria-hidden="true"></i></span></p>
                     </a>
                     </div>

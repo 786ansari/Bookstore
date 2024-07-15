@@ -8,6 +8,8 @@ const crypto = require("crypto");
 const { getcartinfo } = require("../models/bookmodels");
 const R = require("../utils/responseHelper");
 const currentAffairsSchema = require("../models/currentaffairs")
+const validateInput = require("../helper/emailmobileVal")
+// const sendOtpEmail = require("../utils/Sendgrid")
 
 
 const auth = {};
@@ -29,6 +31,26 @@ auth.getUsers = async(req,res,next) => {
         next(error)
     }
 }
+auth.changeActiveStatus = async(req,res,next)=>{
+    try {
+        let add = await authModal.changeStatus(req.body)
+        return R(res,true,"Status updated successfully!!",{},200)
+    } catch (error) {
+        next(error)
+    }
+ 
+}
+
+auth.changeUserDeleteStatus = async(req,res,next)=>{
+    try {
+        let add = await authModal.changeDeleteStatus(req.body)
+        return R(res,true,"Status updated successfully!!",{},200)
+    } catch (error) {
+        next(error)
+    }
+ 
+}
+
 
 auth.getProfile = async(req,res,next) => {
     try {
@@ -39,6 +61,61 @@ auth.getProfile = async(req,res,next) => {
         next(error)
     }
 }
+auth.verifyOtp = async(req,res,next) => {
+    try {
+        const {otpkey,otp} = req.body
+    const check = validateInput(otpkey)
+        console.log("getusergetuser",check,otpkey)
+    let getUser = await authModel.login(check, otpkey);
+    if(getUser.otp == otp){
+        return R(res, true, `OTP matched successfully!`, {},200)
+    }
+    else{
+        return R(res, false, `OTP doesn't matched!`, {},200)
+    }
+    } catch (error) {
+        next(error)
+    }
+    
+}
+
+auth.getOtpForMobileAndEmail = async(req,res,next) => {
+    try{
+        const {otpkey} = req.body
+        const check = validateInput(otpkey)
+      console.log("getusergetuser",check,otpkey)
+      if(check == "invalid"){
+        return R(res, false, `Invalid input!`, {},200)
+      }
+        let getUser = await authModel.login(check, otpkey);
+        
+        if(Object.values(getUser).length>0){
+            const generateOtp = () => {
+                return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
+              };
+              
+            if( check == "emailId"){                  
+                  const otp = generateOtp();
+                  getUser.otp = otp;
+                  getUser.save()
+                  return R(res, true, `OTP sent successfully! ${otp}`, otp,200)
+                //   await sendOtpEmail(otpkey, otp,res,next);
+            }
+            else{
+                const otp = generateOtp();
+                getUser.otp = otp;
+                getUser.save()
+                return R(res, true, `OTP sent successfully! ${otp}`,otp ,200)
+            }
+            
+        }
+        return R(res, false, "User not found", {},200)
+    }catch(error){
+        next(error)
+    }
+   
+
+}
 
 
 auth.loginService = async (req,res,next) => {
@@ -48,8 +125,14 @@ auth.loginService = async (req,res,next) => {
         } = req.body
         
         // const isUserExist = await User.findOne({emailId:emailId});
-        let val = await authModel.login("emailId", emailId, password);
+        let val = await authModel.login("emailId", emailId);
         if (val) {
+            if(!val.is_active){
+                return R(res, false, "User not active! contact to admin!! ", {},200)
+            }
+            if(val.is_deleted){
+                return R(res, false, "User Deleted!", {},200)
+            }
             const compare = await bcrypt.passwordComparision(
                 password,
                 val.password
@@ -111,7 +194,7 @@ auth.signUp = async (req,res,next) => {
         mobileNumber: mobileNumber,
         password: await bcrypt.passwordEncryption(password),
         state: state,
-        subscription_end:futureTimeInMillis
+        subscription_end_for_current_affairs:futureTimeInMillis
     }
     const register = await authModel.signUp(newUser)
     const userData = {
@@ -183,28 +266,23 @@ auth.deletesubuser = async (req,res,next) => {
 
 auth.forgotPassword = async (req,res,next) => {
     try{
-        console.log("req.body.emailId",req.body)
-        let val = await authModel.login("emailId", req.body.emailId);
-        if(!val){
-            return R(res,false,"No user exist",{},403)
+        const {password,cpassword,otpkey} = req.body
+        const check = validateInput(otpkey)
+      console.log("getusergetuser",check,otpkey)
+      if(check == "invalid"){
+        return R(res, false, `Invalid input!`, {},200)
+      }
+        let getUser = await authModel.login(check, otpkey);
+        if(Object.values(getUser).length>0){
+            const newpassword = await bcrypt.passwordEncryption(password);
+            getUser.password = newpassword;
+            await getUser.save()
+            return R(res,true,`Password changed successfully`,{},200)
         }
-        // function generateRandomString() {
-        //     const characters = 'ABCDEFGH0123456789';
-        //     let result = '';
-        //     for (let i = 0; i < 6; i++) {
-        //       result += characters.charAt(Math.floor(Math.random() * characters.length));
-        //     }
-        //     return result;
-        //   }
-        console.log("forgotpassword",val)
-            const password = await bcrypt.passwordEncryption("123456");
-            const insData = await authModel.forgotPassword(req.body.emailId, password);
+        return R(res,true,`User not found!! Please try again`,{},200)
 
-            if (insData) {
-                return R(res,true,`Password changed successfully your new password is: 123456`,{},200)
-            }
+           
     }catch(error){
-        console.log("erroroororor",error)
         next(error)
     }
    

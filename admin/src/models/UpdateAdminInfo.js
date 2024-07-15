@@ -31,7 +31,7 @@ const UpdateAdminInfo = (props) =>{
         let data = {
             id:id,
             emailId:emailId,
-            mobileNum:mobileNum,
+            mobileNumber:mobileNum,
             address:address,
             whatsAppNumber:whatsAppNumber
         }

@@ -82,6 +82,8 @@ const Design = (props) => {
   const columns = [
     { dataField: "id", text: "id",formatter: (cell, row,rowIndex) => `${rowIndex+1}` },
     { dataField: "designType", text: "Design Type", },
+    { dataField: "amount", text: "Amount", },
+    { dataField: "plan", text: "Plan Type", },
     { dataField: "icon", text: "Icon", },
     { dataField: "file", text: "File", },
     { dataField: "createdAt", text: "Date", formatter:dateFormatter},

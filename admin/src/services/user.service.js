@@ -11,6 +11,31 @@ export const getUserDataService =async () => {
     };
     return await curd.get(dataUrl.MainUrl+dataUrl.endPoint.getUser,{},headers)
 }
+
+export const updateUserStatus =async (data) => {
+    const { MainUrl, endPoint } = dataUrl;
+    const url = MainUrl + endPoint.changeUserActiveStatus;
+    let token = localStorage.getItem("token")
+     const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': token
+    };
+    return await curd.post(url,data,headers)
+}
+
+export const updateUserDeleteStatus =async (data) => {
+    const { MainUrl, endPoint } = dataUrl;
+    const url = MainUrl + endPoint.changeUserDeleteStatus;
+    let token = localStorage.getItem("token")
+     const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': token
+    };
+    return await curd.post(url,data,headers)
+}
+
+
+
 export const UpdateUserService =async (data) => {
     return await curd.post(dataUrl.MainUrl+dataUrl.endPoint.updateUser,{},data)
 }

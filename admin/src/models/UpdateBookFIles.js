@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import  {ResultFunction} from "../comman/resultFunction"
 import { BookFilesUpdate } from "../services/book.service"
+import { imageUrl } from "../services/dataurl"
 
 export const UpdateBookFiles = (props) => {
     const[id,setId] = useState("")
     const [file,setFile] = useState("")
-    const [chapter, setChapter] = useState("")
+    const [chapter, setChapter] = useState(null)
     const [fileType,setFileType] = useState("")
     const[bookName,setBookName] = useState("")
     const[bookId,setBookId] = useState("")
@@ -98,6 +99,7 @@ export const UpdateBookFiles = (props) => {
                     name="chapter"
                     value={chapter}
                     placeholder="Add chapter"
+                    disabled
                     onChange={(e)=>{setChapter(e.target.value)}}
                   />
                 </div>
@@ -111,6 +113,7 @@ export const UpdateBookFiles = (props) => {
                     placeholder=""
                     onChange={handleFileChange}
                   />
+                  <a href={imageUrl+file} target="_blank" download >View Pdf File</a>
                 </div>
             <button
               class="btn btn-s btn-indigo btn-block w-100"

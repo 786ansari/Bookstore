@@ -35,12 +35,6 @@ const ForgotPassword = () => {
                 result = await forgotPassword(data)
                 console.log("sdjfsdjhfsdhfhsbd",result)
             HotToaster(result.status,result.message)
-        if(result.status){
-            }
-            else{
-                HotToaster(false,result.message)
-            }
-           
             }
             catch(err){
                 console.log("err",err,result)

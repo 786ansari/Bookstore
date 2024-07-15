@@ -15,7 +15,7 @@ const currentAffairsSchema = mongoose.Schema(
         type:{type:String},
         fileType:{type:String},
         file:{type:String},
-        range:{type:String},
+        range:{type:String,default:null},
         plan:{type:String},
         date:{type: Date, default: Date.now}
     },

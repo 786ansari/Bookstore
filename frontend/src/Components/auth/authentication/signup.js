@@ -30,6 +30,7 @@ const Signup  = (props) => {
     },[props])
     
       const handleCloseDialogSingup = () => {
+        EmpytState()
         props.modalClose("signup",false)
         setIsOpenSingup(false);
       };

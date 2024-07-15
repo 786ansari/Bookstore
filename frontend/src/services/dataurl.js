@@ -23,6 +23,9 @@ export const endPoint = {
     changePassword:"profile/changepassword",
     updateEmailMobile:"profile/updateEmailAndMobile",
     forgotPassword:"auth/forgotpassword",
+    changeforgotPassword:"auth/change-forgot-password",
+    getOtp:"auth/get-otp",
+    verifyOtp:"auth/verifyOtp",
     addNewsLetter:"book/add-newsletter",
     addToCart:"book/add-book-to-cart",
     addToCartByUserId:"book/add-book-to-cart-by-userid",
@@ -40,7 +43,10 @@ export const endPoint = {
     getCurrentAffairs:"currentAffairs/getCurrentAffairsFiles",
     getTestSeries:"testSeries/getTestSeries",
     addTypingForm:"typing/addTypingForm",
+
     getAllDesign:"design/getAllDesign",
+    check_design_for_free:"design/check-design-plan",
+
     addDataTranslate:"datatranslate/addDataTranslateFormDetails",
     getallPreviousYearPaper:"paper/getallPreviousYearPaper",
     checkSubscriptionForCa:"currentAffairs/check-user-subscription",
@@ -49,5 +55,6 @@ export const endPoint = {
 
     create_order:"order/create-order",
     payment_capture:"order/payment-capture",
-    get_subscription_plans:"order/get-subscription-plans"
+    get_subscription_plans:"order/get-subscription-plans",
+
 }

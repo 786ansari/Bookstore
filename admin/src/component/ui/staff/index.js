@@ -31,17 +31,19 @@ const Staff = () => {
     const [gander, setGander] = useState('');
     const [dob, setDob] = useState('');
     const [address, setAddress] = useState('');
+    const [locations, setLocations] = useState('');
     const [multipleSelectd, setMultipleSelectd] = useState([]);
     const params = useLocation()
     const [designation, setDesignation] = useState([]);
 
     useEffect(()=>{
-        console.log("ssssssssssssssssssssssssssssssssss",params)
+        setLocations(params?.pathname?.split("-")[1])
         getsubadmins(params)
     },[])
     const getsubadmins = async(params) => {
+        console.log("ssssssssssssssssssssssssssssssssss",params)
         const pageType = {
-            type:params?.pathname?.split("-")[1]
+            type:params?.pathname?.split("-")[1] || locations
         }
         let get = await getAllSubadmins(pageType)
         if(get.status && get.data.length>0){
@@ -59,6 +61,7 @@ const Staff = () => {
     };
 
     const statuslinkFollow = (cell, row, rowIndex, formatExtraData) => {
+        console.log("cellcecllrowrow",row)
         return (
             <>
                 <button class={row?.active === "1" ? "btn btn-sm btn-success" : "btn btn-sm btn-danger"} style={{ marginLeft: "20px" }} onClick={() => handleStatus(row?._id, cell === "0" ? "1" : "0")}>{row?.active === "1" ? "Active" : "Inactive"}</button>
@@ -86,8 +89,8 @@ const Staff = () => {
             id:userId,
             status:cell
         }
-       let status = await subadminStatusChange(data)
-       ResultFunction(status,getsubadmins)
+       let result = await subadminStatusChange(data)
+        ResultFunction(result,getsubadmins)
     }
 
     const handleSubadminDetail = (id) => {

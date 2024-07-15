@@ -99,6 +99,19 @@ const ViewUser = ({user}) => {
                                 <p>{user?.pincode}</p>  
                             </div>
                         </div>}
+                        {console.log("users,",user.is_active,user.is_deleted)}
+                        {user && <div className="row">
+                            <div className="col-md-12 d-flex justify-content-between">
+                                <label>Active</label>
+                                <p>{user?.is_active?"True":"False"}</p>  
+                            </div>
+                        </div>}
+                        {user && <div className="row">
+                            <div className="col-md-12 d-flex justify-content-between">
+                                <label>Delete</label>
+                                <p>{user?.is_deleted?"True":"False"}</p>  
+                            </div>
+                        </div>}
                         {user?.createdAt && <div className="row">
                             <div className="col-md-12 d-flex justify-content-between">
                                 <label>Account Created</label>

@@ -19,7 +19,7 @@ const Category = (props) => {
                         <samp className="fl  categories">Categories</samp>
                         <div className="w100p fr">
                           <span className="fl tran">English</span>{" "}
-                          <span className="fr tran">Hindi</span>
+                          {/* <span className="fr tran">Hindi</span> */}
                         </div>
                       </div>
 

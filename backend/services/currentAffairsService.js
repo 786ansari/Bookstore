@@ -38,7 +38,6 @@ CurrentAffairsService.get = async(req,res,next)=>{
 CurrentAffairsService.update = async(req,res,next)=>{
     try {
         const {fileType,type,plan,range} = req.body
-        const {filename} = req.file
         const { userId } = req.doc
         let details = {
             userId:userId,
@@ -48,7 +47,7 @@ CurrentAffairsService.update = async(req,res,next)=>{
             range:range
         }
         if(req.file && req.file.filename){
-            details.file = filename
+            details.file = req.file.filename
         }
         else{
             details.file = req.body.file
@@ -93,7 +92,7 @@ CurrentAffairsService.check_is_user_subscribed = async(req,res,next) => {
             }
             let check = await authModal.checkAvailablityWithUserId(user_id)
            
-            if (!check.is_subscribed) {
+            if (!check.is_subscribed_for_current_affairs) {
                 return R(res,false,"You are not subscribed yet!!",{},200)
             }
             const getFile = await currentAffairsModels.getFileForSubscribedUser(_id,type,fileType)

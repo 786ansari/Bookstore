@@ -19,6 +19,7 @@ import FeedbackForm from "../../Components/support"
 import NewsletterSubscription from "../../Components/UserFeedback";
 import CartList from "../../Components/AddCart/CartList";
 import { imageUrl } from "../../services/dataurl";
+import { useNavigate } from "react-router-dom";
 
 
 const CurrentAffairs = () => {
@@ -31,6 +32,7 @@ const CurrentAffairs = () => {
     const [newsLater, setNewsLater] = useState(false);
     const [fileType, setFileType] = useState("");
     const [currentAffairsList,setCurrerntAffairsList] = useState([])
+    const navigate = useNavigate()
     useEffect(()=>{
       getCurrentAffairsData()
     },[tabSelected])
@@ -67,7 +69,7 @@ const CurrentAffairs = () => {
       console.log("hdnlefilechange",result,val)
 
       if(!result.status){
-            window.location.href = "/subscription-plan"
+          navigate("/subscription-plan",{state:"current_affairs"})
       }
       else{
         window.open(imageUrl+result.data.file)

@@ -7,7 +7,6 @@ const TestSeriesService = {}
 TestSeriesService.add = async(req,res,next)=>{
     try {
         const {fileType,subject,categoryId,plan,releaseDate} = req.body
-        const {filename} = req.file
         const { userId } = req.doc
         let data = {
             userId:userId,
@@ -18,7 +17,7 @@ TestSeriesService.add = async(req,res,next)=>{
             releaseDate:releaseDate
         }
         if(req.file && req.file.filename){
-            data.file = filename
+            data.file = req.file.filename
         }
         let add = await testSeriesModels.addTestSeries(data)
         return R(res,true,"Data added successfully",{},200)
@@ -90,7 +89,7 @@ TestSeriesService.check_is_user_subscribed = async(req,res,next) => {
         }
         let check = await authModal.checkAvailablityWithUserId(user_id)
        
-        if (!check.is_subscribed) {
+        if (!check.is_subscribed_for_test_series) {
             return R(res,false,"You are not subscribed yet!!",{},200)
         }
         const getFile = await testSeriesModels.getFileForSubscribedUser(_id,fileType)

@@ -6,7 +6,7 @@ import Button from "../../customComponent/Button";
 import { CategoryListGet } from "../../services/book.service";
 import Category from "../../Components/categorylist";
 import TestContant from "./TestContant";
-import { Link, useLocation, useParams } from "react-router-dom"
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom"
 import { getTestSeriesAsQuery } from "../../services/testseries.service";
 import SlideShow from "../../Components/Slideshow/Slideshow";
 import SocialIcons from "../../Components/socialmedia";
@@ -25,6 +25,7 @@ const TestSeries = () => {
     const [customerCare, setCustomerCare] = useState(false);
     const [newsLater, setNewsLater] = useState(false);
     let params = useParams()
+    const navigate = useNavigate()
 
     useEffect(()=>{
         let data = {
@@ -63,7 +64,7 @@ const TestSeries = () => {
         console.log("hdnlefilechange",result,val)
   
         if(!result.status){
-              window.location.href = "/subscription-plan"
+            navigate("/subscription-plan",{state:"test_series"})
         }
         else{
           window.open(imageUrl+result.data.file)

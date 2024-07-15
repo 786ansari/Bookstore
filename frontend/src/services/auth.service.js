@@ -20,9 +20,28 @@ let token = localStorage.getItem("token")
     return await curd.post(url,data,headers)
 }
 
-export const forgotPassword = async(data) => {
+export const getOtp = async(data) => {
     const { MainUrl, endPoint } = dataUrl;
-    const url = MainUrl + endPoint.forgotPassword;
+    const url = MainUrl + endPoint.getOtp;
+    let token = localStorage.getItem("token")
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    return await curd.post(url,data,headers)
+} 
+export const otpVerification = async(data) => {
+    const { MainUrl, endPoint } = dataUrl;
+    const url = MainUrl + endPoint.verifyOtp;
+    let token = localStorage.getItem("token")
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    return await curd.post(url,data,headers)
+} 
+
+export const changeForgotPassword = async(data) => {
+    const { MainUrl, endPoint } = dataUrl;
+    const url = MainUrl + endPoint.changeforgotPassword;
 let token = localStorage.getItem("token")
  const headers = {
     'Content-Type': 'application/json'

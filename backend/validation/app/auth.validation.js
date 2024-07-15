@@ -22,7 +22,58 @@ const  validate  = require('../../helper/ValidateHelper');
 		next
 	) {
 		const schema = Joi.object().keys({
-			emailId: Joi.string().email().required()
+			password: Joi.string().required().messages({
+				"string.empty": "Password is required",
+      			"any.required": "Password is required",
+			}),
+			cpassword: Joi.string().required().messages({
+				"string.empty": "Confirm password is required",
+      			"any.required": "Confirm password is required",
+			}),
+			otpkey: Joi.string().required().messages({
+				"string.empty": "Email Id or mobile number is required",
+      			"any.required": "Email Id or mobile number is required",
+			}),
+
+		});
+		const isValid = await validate(req.body, res, schema);
+		if (isValid) {
+			next();
+		}
+	}
+
+	async function otpSendValidation(
+		req,
+		res,
+		next
+	) {
+		const schema = Joi.object().keys({
+			otpkey: Joi.string().required()
+				.messages({
+				"string.empty": "Email Id or mobile number is required",
+      			"any.required": "Email Id or mobile number is required",
+		})
+		});
+		const isValid = await validate(req.body, res, schema);
+		if (isValid) {
+			next();
+		}
+	}
+
+	async function otpVerifyValidation(
+		req,
+		res,
+		next
+	) {
+		const schema = Joi.object().keys({
+			otpkey: Joi.string().required().messages({
+				"string.empty": "Email Id or mobile number is required",
+      			"any.required": "Email Id or mobile number is required",
+			}),
+			otp:    Joi.string().required().messages({
+				"string.empty": "Otp is required",
+      			"any.required": "Otp is required",
+			}),
 		});
 		const isValid = await validate(req.body, res, schema);
 		if (isValid) {
@@ -72,4 +123,4 @@ const  validate  = require('../../helper/ValidateHelper');
 		}
 	}
 
-module.exports = { loginValidation, signUpValidation, forgotPasswordValidation }
+module.exports = { loginValidation, signUpValidation, forgotPasswordValidation,otpVerifyValidation,otpSendValidation }

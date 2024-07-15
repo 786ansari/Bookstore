@@ -9,6 +9,8 @@ DesignService.add = async(req,res,next)=>{
         let data = {
             userId:req.doc.userId,
             designType:req.body.designType,
+            amount:req.body.amount,
+            plan:req.body.plan,
             icon:req.files['icon'][0].filename,
             file:req.files['file'][0].filename,
         }
@@ -18,6 +20,19 @@ DesignService.add = async(req,res,next)=>{
         next(error)
     }
    
+}
+
+DesignService.checkPlan = async(req,res,next)=> {
+    try {
+        let get = await designModels.checkForDesign(req.body)
+        if(get.plan == "Free"){
+            return R(res,true,"Data found successfully",get,200)
+        }
+        return R(res,false,"Data is not free",get,200)
+        
+    } catch (error) {
+        next(error)
+    }
 }
 DesignService.get = async(req,res,next)=>{
     try {
@@ -33,6 +48,8 @@ DesignService.update = async(req,res,next)=>{
         let details = {
             userId:req.doc.userId,
             designType:req.body.designType,
+            amount:req.body.amount,
+            plan:req.body.plan,
         }
         if(req.file && req.file['icon']){
             details.icon = req.file['icon'][0].filename

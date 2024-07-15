@@ -13,11 +13,51 @@ const designSchema = mongoose.Schema(
     {
         designType:{type:String},
         file:{type:String},
+        amount:{type:Number,default:0},
+        plan:{type:String},
         icon:{type:String},
         date:{type: Date, default: Date.now}
     },
     { timestamps: true }
 );
+
+const designPurchasedSchema = mongoose.Schema(
+    {
+        txn_id: {
+             type:Schema.Types.ObjectId,
+            ref: 'transactions'
+        },
+        userId: {
+            type:Schema.Types.ObjectId,
+            ref: 'users'
+        },
+        designId: {
+            type:Schema.Types.ObjectId,
+            ref: 'designs'
+        },
+    },
+    { timestamps: true }
+)
+
+designModels.purchased = async(data) => {
+    const fileAdd = await db.connectDb("designorders", designPurchasedSchema);
+    let insData = await fileAdd.create(data);
+    if (insData) {
+        return true;
+    } else {
+        return false
+    };
+}
+
+designModels.getDesignById = async(_id) =>{
+    const fileAdd = await db.connectDb("designs", designSchema);
+    let insData = await fileAdd.findOne({_id:_id});
+    if (insData) {
+        return insData;
+    } else {
+        return false
+    };
+}
 
 designModels.addDesign = async(data) =>{
     const fileAdd = await db.connectDb("designs", designSchema);
@@ -42,6 +82,18 @@ designModels.getDesign = async(data) =>{
         return false
     };
 }
+
+designModels.checkForDesign = async(data) =>{
+    const fileAdd = await db.connectDb("designs", designSchema);
+    let insData = await fileAdd.findOne({_id:data._id});
+    if (insData) {
+        return insData;
+    } else {
+        return false
+    };
+}
+
+
 
 designModels.updateDesign = async(details,id) =>{
     const fileAdd = await db.connectDb("designs", designSchema);

@@ -12,8 +12,10 @@ import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
 // import TraderDetails from "../TraderDetails";
 import { CSVLink } from "react-csv";
-import { getUserDataService } from "../../../services/user.service";
+import { getUserDataService, updateUserDeleteStatus, updateUserStatus } from "../../../services/user.service";
 import ViewUser from "../../../models/ViewUser";
+import Switch from "react-switch";
+import { ResultFunction } from "../../../comman/resultFunction";
 // import moment from "moment";
 // import { StoreKeys, getActiveValue, handleActiveValue } from "../../../utils/StorageHandler";
 
@@ -47,6 +49,39 @@ const Users = (props) => {
         setViewUser(row)
     }
 
+    const handleDeleteChecked = async(e,row) => {
+        let data = {
+          id:row._id,
+          isDelete:e
+        }
+        let result = await updateUserDeleteStatus(data)
+        ResultFunction(result,getuserslist)
+    
+    
+      }
+    const isDeleteFormatter = (cell, row) => {
+        console.log("isactiveformatter",row)
+        return(
+          <Switch onChange={(e)=>handleDeleteChecked(e,row)} id="isDelete" checked={row?.is_deleted}/>
+        )
+      }
+
+    const handleChecked = async(e,row) => {
+        let data = {
+          id:row._id,
+          isActive:e
+        }
+        let result = await updateUserStatus(data)
+        ResultFunction(result,getuserslist)
+    
+    
+      }
+    const isActiveFormatter = (cell, row) => {
+        console.log("isactiveformatter",row)
+        return(
+          <Switch onChange={(e)=>handleChecked(e,row)} id="isActive" checked={row?.is_active}/>
+        )
+      }
     const columns = [
 
         // { dataField: '_id', text: 'User ID' },
@@ -56,6 +91,8 @@ const Users = (props) => {
         { dataField: 'emailId', text: 'Email', sort: true },
         { dataField: 'mobileNumber', text: 'Mobile Number', sort: true },
         { dataField: 'state', text: 'state', sort: true },
+        { dataField: 'is_active', text: 'Active', sort: true, formatter: isActiveFormatter },
+        { dataField: 'is_deleted', text: 'Delete', sort: true,formatter:isDeleteFormatter },
 
         // { dataField: 'pMode', text: 'Preperation Mode', sort: true, },
       //   { dataField: 'createdAt', text: 'Registration Date', sort: true, formatter: dateFilter },
@@ -65,6 +102,8 @@ const Users = (props) => {
         { dataField: 'Action', text: 'Action', formatter: linkFollow },
 
     ]
+
+  
 
     const pagination = paginationFactory({
         page: 1,
