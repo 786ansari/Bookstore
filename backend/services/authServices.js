@@ -9,7 +9,8 @@ const { getcartinfo } = require("../models/bookmodels");
 const R = require("../utils/responseHelper");
 const currentAffairsSchema = require("../models/currentaffairs")
 const validateInput = require("../helper/emailmobileVal")
-// const sendOtpEmail = require("../utils/Sendgrid")
+const sendOtpEmail = require("../utils/Sendgrid")
+const IP = require('ip');
 
 
 const auth = {};
@@ -68,6 +69,8 @@ auth.verifyOtp = async(req,res,next) => {
         console.log("getusergetuser",check,otpkey)
     let getUser = await authModel.login(check, otpkey);
     if(getUser.otp == otp){
+        getUser.otp = "";
+        await getUser.save()
         return R(res, true, `OTP matched successfully!`, {},200)
     }
     else{
@@ -83,11 +86,11 @@ auth.getOtpForMobileAndEmail = async(req,res,next) => {
     try{
         const {otpkey} = req.body
         const check = validateInput(otpkey)
-      console.log("getusergetuser",check,otpkey)
       if(check == "invalid"){
         return R(res, false, `Invalid input!`, {},200)
       }
         let getUser = await authModel.login(check, otpkey);
+      console.log("getusergetuser",Object.values(getUser).length)
         
         if(Object.values(getUser).length>0){
             const generateOtp = () => {
@@ -98,8 +101,13 @@ auth.getOtpForMobileAndEmail = async(req,res,next) => {
                   const otp = generateOtp();
                   getUser.otp = otp;
                   getUser.save()
-                  return R(res, true, `OTP sent successfully! ${otp}`, otp,200)
-                //   await sendOtpEmail(otpkey, otp,res,next);
+                  const sendmail = await sendOtpEmail(otpkey, otp,res);
+                  if(sendmail){
+                    return R(res, true, `OTP sent successfully! Please check your mail`,{} ,200)
+                  }
+                  else{
+                  return R(res, false, `Error while sending otp`,{} ,501)
+                  }
             }
             else{
                 const otp = generateOtp();
@@ -121,32 +129,29 @@ auth.getOtpForMobileAndEmail = async(req,res,next) => {
 auth.loginService = async (req,res,next) => {
     try {
         let {
-            emailId, password,ipAddress
+            name,emailId, password,sign_mode
         } = req.body
-        
-        // const isUserExist = await User.findOne({emailId:emailId});
+        const ipAddress = IP.address();
+        console.log(ipAddress)
         let val = await authModel.login("emailId", emailId);
-        if (val) {
-            if(!val.is_active){
-                return R(res, false, "User not active! contact to admin!! ", {},200)
-            }
-            if(val.is_deleted){
-                return R(res, false, "User Deleted!", {},200)
-            }
+        if(Object.values(val).length>0 && !val?.is_active){
+            return R(res, false, "User not active! contact to admin!! ", {},200)
+        }
+        if(Object.values(val).length>0 && val?.is_deleted){
+            return R(res, false, "User Deleted!", {},200)
+        }
+        if(sign_mode == "MANUAL"){
+            if(val){
             const compare = await bcrypt.passwordComparision(
                 password,
                 val.password
             );
-            
-            // let master_pass = "$2b$10$yxq7Shgk9Jpyikv6ohYtDu/xcjpUdq2RtmxyyteVESia5e0tRuB.a"
-            // const system_login = await bcrypt.passwordComparision(password, master_pass)
             if (compare) {
                 const userData = {
                     // userId: val["userId"],
                     userId: val._id,
                     emailId: val.emailId,
                     name: val.name,
-                    lastName: val.lastName,
                     mobileNumber: val.mobileNumber,
                 };
                 let getCartByIp = await BookModel.getbookfromcart(ipAddress)
@@ -165,9 +170,53 @@ auth.loginService = async (req,res,next) => {
             } else {
                return R(res, false, "Password not matched", {},403)
             }
-        } else {
-           return R(res, false, "No user found", {},403)
+        }}
+        if(sign_mode == "GOOGLE"){
+            if(Object.values(val).length>0){
+                const userData = {
+                    userId: val._id,
+                    emailId: val.emailId,
+                    name: val.name,
+                };
+                let getCartByIp = await BookModel.getbookfromcart(ipAddress)
+                if(getCartByIp.length>0){
+                    let updateCartUserId = await BookModel.updateUserId(ipAddress,val._id)
+                }
+    
+                const secret = process.env.JWT_SECRET;
+                userData.token = jwt.sign(userData, secret);
+                userData.profile = val
+                return R(res, true, "Login Successfully", userData,200)
+            
+        }else{
+            console.log("oneoneoneoneone",req.body)
+            const now = new Date();
+            const futureDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+            const futureTimeInMillis = futureDate.getTime()
+            const newUser = {
+                emailId: emailId,
+                name: name,
+                subscription_end_for_current_affairs:futureTimeInMillis
+            }
+            console.log("twotwotwotwotwo",newUser)
+            const register = await authModel.signUp(newUser)
+            const userData = {
+                emailId: emailId,
+                name: name,
+                userId:register._id
+            };
+            console.log("twotwotwotwotwo",userData,register)
+            const secret = process.env.JWT_SECRET;
+            userData.token = jwt.sign(userData, secret);
+            userData.profile = req.body
+            console.log("twotwotwotwotwo",secret,userData)
+            return R(res, true, "Account logged in Successfully!!", userData,200)
         }
+    }
+        else {
+            return R(res, false, "No user found", {},403)
+         }
+        
     } catch (error) {
         next(error)
     }
@@ -175,39 +224,81 @@ auth.loginService = async (req,res,next) => {
 };
 
 auth.signUp = async (req,res,next) => {
-    const { Cpassword,emailId,mobileNumber,name,password,state } = req.body
-    
-    try{
-    let isUserExist = await authModel.checkAvailablity(emailId,mobileNumber)
-    console.log("isuserexist",isUserExist)
-    if (isUserExist?.length>0) {
-        return R(res, false, "Email Id or Mobile Number already exists!!", {},406)
-    }
+    const { Cpassword,emailId,mobileNumber,name,password,state,sign_mode } = req.body
     const now = new Date();
     const futureDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
     const futureTimeInMillis = futureDate.getTime()
-    
-    const newUser = {
-        emailId: emailId,
-        name: name,
-        // lastName:lastName,
-        mobileNumber: mobileNumber,
-        password: await bcrypt.passwordEncryption(password),
-        state: state,
-        subscription_end_for_current_affairs:futureTimeInMillis
-    }
-    const register = await authModel.signUp(newUser)
-    const userData = {
-        emailId: emailId,
-        name: name,
-        mobileNumber: mobileNumber,
-        userId:register._id
-    };
-    console.log("registerregisterregister",register)
-    const secret = process.env.JWT_SECRET;
-    userData.token = jwt.sign(userData, secret);
-    userData.profile = req.body
-    return R(res, true, "Account Registered Successfully!!", userData,200)
+    const ipAddress = IP.address();
+    try{
+        if(sign_mode == "MANUAL"){
+            let isUserExist = await authModel.checkAvailablity(emailId,mobileNumber)
+            if (isUserExist?.length>0) {
+                return R(res, false, "Email Id or Mobile Number already exists!!", {},406)
+            }
+            const newUser = {
+                emailId: emailId,
+                name: name,
+                // lastName:lastName,
+                mobileNumber: mobileNumber,
+                password: await bcrypt.passwordEncryption(password),
+                state: state,
+                subscription_end_for_current_affairs:futureTimeInMillis
+            }
+            const register = await authModel.signUp(newUser)
+            const userData = {
+                emailId: emailId,
+                name: name,
+                mobileNumber: mobileNumber,
+                userId:register._id
+            };
+            let getCartByIp = await BookModel.getbookfromcart(ipAddress)
+            if(getCartByIp.length>0){
+                let updateCartUserId = await BookModel.updateUserId(ipAddress,register._id)
+            }
+            console.log("registerregisterregister",register)
+            const secret = process.env.JWT_SECRET;
+            userData.token = jwt.sign(userData, secret);
+            userData.profile = req.body
+            return R(res, true, "Account Registered Successfully!!", userData,200)
+        }
+        else if(sign_mode == "GOOGLE"){
+            let isUserExist = await authModel.login("emailId",emailId)
+            if (Object.values(isUserExist).length>0) {
+                const userData = {
+                    emailId: emailId,
+                    name: name,
+                    userId:isUserExist._id
+                };
+                const secret = process.env.JWT_SECRET;
+                userData.token = jwt.sign(userData, secret);
+                userData.profile = req.body
+                return R(res, true, "Account logged in successfully!!", userData,200)
+            }
+            const newUser = {
+                emailId: emailId,
+                name: name,
+                // lastName:lastName,
+                subscription_end_for_current_affairs:futureTimeInMillis
+            }
+            const register = await authModel.signUp(newUser)
+            let getCartByIp = await BookModel.getbookfromcart(ipAddress)
+            if(getCartByIp.length>0){
+                let updateCartUserId = await BookModel.updateUserId(ipAddress,register._id)
+            }
+            const userData = {
+                emailId: emailId,
+                name: name,
+                userId:register._id
+            };
+            console.log("registerregisterregister",register)
+            const secret = process.env.JWT_SECRET;
+            userData.token = jwt.sign(userData, secret);
+            userData.profile = req.body
+            return R(res, true, "Account Registered Successfully!!", userData,200)
+            
+        }
+   
+
 }catch(err){
     next(err)
 }
@@ -285,7 +376,6 @@ auth.forgotPassword = async (req,res,next) => {
     }catch(error){
         next(error)
     }
-   
 };
 
 

@@ -8,6 +8,11 @@ const Schema = mongoose.Schema;
 let ObjectId = require("mongodb").ObjectID;
 
 authModel={}
+const signmode = {
+    FACEBOOK:"FACEBOOK",
+    GOOGLE:"GOOGLE",
+    MANUAL:'MANUAL'
+}
 
 
 const loginSchema = mongoose.Schema(
@@ -26,10 +31,11 @@ const loginSchema = mongoose.Schema(
         pMode: { type: String },
         country: { type: String },
         otp:{type:String},
+        sign_mode:{type:String,enum:Object.values(signmode)},
         is_active: { type: Boolean,default:true },
         is_deleted: { type: Boolean, default:false },
         state: { type: String },
-        password: { type: String, required: true },
+        password: { type: String},
         is_subscribed_for_current_affairs: {type:Boolean,default:true},
         is_subscribed_for_test_series: {type:Boolean,default:false},
         subscription_end_for_current_affairs:{type:String},

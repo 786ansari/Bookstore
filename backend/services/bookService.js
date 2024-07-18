@@ -390,15 +390,20 @@ BookModel.changeStatus = async(req,res,next)=>{
 }
 BookModel.addBookToCart = async(req,res,next)=>{
     try{
+        const { cartRequestData } = req.body
         const ipAddress = IP.address();
+        let parseArray = JSON.parse(cartRequestData)
         let data = {
-            ...req.body,
             systemIp:ipAddress
         }
         if(req?.doc?.userId){
             data.userId = req.doc.userId
         }
-        let add = await bookModels.addbooktocart(data)
+        parseArray.forEach(async element => {
+            data.fileId = element.fileId;
+            data.bookId = element.bookId
+            await bookModels.addbooktocart(data)
+        });
         return R(res,true,"Data added successfully",{},200)
     }catch(error){
         next(error)

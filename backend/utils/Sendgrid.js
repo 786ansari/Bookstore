@@ -1,25 +1,35 @@
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('YOUR_ACTUAL_SENDGRID_API_KEY');
+const nodemailer = require('nodemailer');
+const R = require('./responseHelper');
 
-const sendOtpEmail = (recipientEmail, otp,res,next) => {
-  const msg = {
-    to: recipientEmail,
-    from: 'your-email@example.com', // Use the email address or domain you verified with SendGrid
-    subject: 'Your OTP Code',
-    text: `Your OTP code is: ${otp}`,
-    html: `<strong>Your OTP code is: ${otp}</strong>`,
+// Create a transporter object using the default SMTP transport
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'coachingtestnotes1@gmail.com', // Your Gmail address
+    pass: 'uhpd nshn znmn nvqz'   // Your Gmail password or App Password
+  }
+});
+
+const sendOtpEmail = async(recipientEmail, otp) => {
+  const mailOptions = {
+    from: 'coachingtestnotes1@gmail.com', // Sender address
+    to: "ansarimujjkir786@gmail.com",           // List of recipients
+    subject: 'Your OTP Code',     // Subject line
+    text: `Your OTP code is: ${otp}`, // Plain text body
+    html: `<p>Dear User,</p>
+  <p>We received a request to reset the password for your account. Please enter below OTP to Change password for your account.:</p>
+  <strong>${otp}</strong>
+  <p>If you did not request a password reset, please ignore this email.</p>
+  <p>Thank you,</p>
+  <p>Team Coaching Test & Notes</p>` // HTML body
   };
-
-  sgMail
-    .send(msg)
-    .then(() => {
-      return R(res, true, "OTP sent successfully! Please check your email", {},200)
-    })
-    .catch((error) => {
-      return R(res, false, "Error sending OTP email", error,200)
-    });
+  try {
+    const nodemailor = await transporter.sendMail(mailOptions)
+    return true
+  } catch (error) {
+    return false
+  }
 };
 
-module.exports = sendOtpEmail
-
 // Generate a random OTP (for demonstration purposes)
+module.exports = sendOtpEmail

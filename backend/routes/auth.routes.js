@@ -6,9 +6,9 @@ const { loginValidation, signUpValidation, forgotPasswordValidation, otpSendVali
 const flashService = require("../services/flashMessageService");
 const Razorpay = require('razorpay');
 
-router.post('/signup', signUpValidation,authService.signUp)
+router.post('/signup', authService.signUp)
 
-router.post('/login',loginValidation,authService.loginService)
+router.post('/login',authService.loginService)
 router.post('/get-otp',otpSendValidation, authService.getOtpForMobileAndEmail)
 router.post("/verifyOtp",otpVerifyValidation, authService.verifyOtp)
 

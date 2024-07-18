@@ -21,6 +21,7 @@ const validateFileExtension = (allowedExtensions) => {
 async function BookFilesValidation(req, res, next) {
   const schema = Joi.object().keys({
     _id: Joi.string().optional(),
+    chapter: Joi.string().required(),
     bookId: Joi.string().required().messages({
       "string.base": "Book name must be a string",
       "string.empty": "Book name is required",
@@ -63,7 +64,7 @@ async function BookFilesValidation(req, res, next) {
         }),
       }),
     }),
-    chapter: Joi.string().optional(),
+    
   });
 
   req.body.file = req?.file?.filename || req?.body?.file;
